@@ -4,5 +4,5 @@ class Product < ApplicationRecord
   has_many :reviews
   has_one_attached :image
 
-  validates :name, :price, :inventory_quantity, presence: true
+  validates :name, :description, :price, :inventory_quantity, presence: true
 end
