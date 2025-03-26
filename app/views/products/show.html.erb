@@ -1,2 +1,17 @@
-<h1>Products#show</h1>
-<p>Find me in app/views/products/show.html.erb</p>
+<h1><%= @product.name %></h1>
+
+<% if @product.image.attached? %>
+  <%= image_tag @product.image, class: "img-fluid mb-3", style: "max-height: 400px;" %>
+<% end %>
+
+<p><strong>Price:</strong> $<%= number_with_precision(@product.price, precision: 2) %></p>
+<p><strong>Description:</strong> <%= @product.description %></p>
+<p><strong>Category:</strong> <%= link_to @product.category.name, category_path(@product.category) %></p>
+
+<%= form_with url: add_to_cart_path(@product), method: :post, local: true do %>
+    <div class="input-group mb-3" style="max-width: 200px;">
+      <%= number_field_tag :quantity, 1, min: 1, class: "form-control" %>
+      <button type="submit" class="btn btn-primary">Add to Cart</button>
+    </div>
+  <% end %>
+  

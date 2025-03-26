@@ -1,0 +1,16 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f4f9ff;
+  }
+  
+  .navbar-nav .nav-link:hover {
+    text-decoration: underline;
+    opacity: 0.9;
+  }
+  
+  .page-item.active .page-link {
+    background-color: #87CEFA;
+    border-color: #87CEFA;
+    color: #fff;
+  }
+  

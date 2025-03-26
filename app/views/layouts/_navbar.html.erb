@@ -1,0 +1,26 @@
+<nav class="navbar navbar-expand-lg navbar-light" style="background-color: #87CEFA;">
+  <div class="container">
+    <%= link_to "🎹 Pianocella", root_path, class: "navbar-brand fw-bold text-dark" %>
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <%= link_to "All Products", products_path, class: "nav-link fw-semibold text-dark" %>
+        </li>
+        <% Category.all.each do |category| %>
+          <li class="nav-item">
+            <%= link_to category.name, category_path(category), class: "nav-link fw-semibold text-dark" %>
+          </li>
+        <% end %>
+        <li class="nav-item">
+            <%= link_to "🛒 Cart", cart_path, class: "nav-link fw-semibold text-dark" %>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+</nav>

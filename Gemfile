@@ -72,6 +72,8 @@ gem 'activeadmin'
 # Search functionality
 gem 'ransack'
 
+gem 'sassc-rails'
+
 gem 'nokogiri'
 gem 'open-uri'
 gem 'httparty'
