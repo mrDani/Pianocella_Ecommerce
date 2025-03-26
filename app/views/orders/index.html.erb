@@ -1,0 +1,11 @@
+<h1>My Orders</h1>
+
+<% @orders.each do |order| %>
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title">Order #<%= order.id %> - <%= order.status.capitalize %></h5>
+      <p>Total: $<%= order.total_price %></p>
+      <%= link_to "View Details", order_path(order), class: "btn btn-outline-primary btn-sm" %>
+    </div>
+  </div>
+<% end %>

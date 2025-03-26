@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  get "orders/new"
+  get "orders/create"
+  get "orders/index"
+  get "orders/show"
   get "carts/show"
   get "categories/show"
   devise_for :admin_users, ActiveAdmin::Devise.config
@@ -16,7 +20,8 @@ Rails.application.routes.draw do
     delete 'remove/:product_id', to: 'carts#remove', as: :remove_item
   end
   
-  
+  resources :orders, only: [:new, :create, :index, :show]
+
   # Health & PWA endpoints (optional but good)
   get "up" => "rails/health#show", as: :rails_health_check
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
