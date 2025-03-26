@@ -1,0 +1,49 @@
+<div class="container my-5">
+  <h1 class="mb-4 text-center text-primary fw-bold">🛒 Your Shopping Cart</h1>
+
+  <% if @cart_items.any? %>
+    <div class="table-responsive shadow-sm rounded">
+      <table class="table table-bordered align-middle">
+        <thead class="table-primary">
+          <tr>
+            <th>Product</th>
+            <th class="text-center">Quantity</th>
+            <th class="text-end">Unit Price</th>
+            <th class="text-end">Subtotal</th>
+            <th class="text-end">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% total = 0 %>
+          <% @cart_items.each do |item| %>
+            <% total += item[:subtotal] %>
+            <tr>
+              <td><strong><%= item[:product].name %></strong></td>
+              <td class="text-center">
+                <%= form_with url: update_item_cart_path(item[:product]), method: :patch, local: true, class: "d-flex justify-content-center align-items-center gap-2" do %>
+                  <%= number_field_tag :quantity, item[:quantity], class: "form-control form-control-sm w-50 text-center", min: 1 %>
+                  <%= submit_tag "Update", class: "btn btn-outline-secondary btn-sm" %>
+                <% end %>
+              </td>
+              <td class="text-end text-muted">$<%= number_with_precision(item[:product].price, precision: 2) %></td>
+              <td class="text-end fw-semibold">$<%= number_with_precision(item[:subtotal], precision: 2) %></td>
+              <td class="text-end">
+                <%= button_to "Remove", remove_item_cart_path(item[:product]), method: :delete, class: "btn btn-sm btn-outline-danger" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="text-end mt-4">
+      <h4 class="fw-bold">Total: $<%= number_with_precision(total, precision: 2) %></h4>
+      <%= link_to "Proceed to Checkout", new_order_path, class: "btn btn-lg btn-primary mt-2" %>
+    </div>
+  <% else %>
+    <div class="alert alert-info text-center">
+      <h5>Your cart is empty.</h5>
+      <%= link_to "Continue Shopping", products_path, class: "btn btn-outline-primary mt-2" %>
+    </div>
+  <% end %>
+</div>

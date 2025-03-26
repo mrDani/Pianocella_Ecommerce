@@ -14,5 +14,20 @@ ActiveAdmin.register Category do
   #   permitted << :other if params[:action] == 'create' && current_user.admin?
   #   permitted
   # end
-  
+
+  permit_params :name, :description
+
+  # Optional: admin form customization
+  form do |f|
+    f.inputs do
+      f.input :name
+      f.input :description
+    end
+    f.actions
+  end
+
+  remove_filter :products
+
+  filter :name
+  filter :created_at
 end

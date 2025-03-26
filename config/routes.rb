@@ -1,9 +1,10 @@
 Rails.application.routes.draw do
+  get "pages/show"
   get "orders/new"
   get "orders/create"
   get "orders/index"
   get "orders/show"
-  get "carts/show"
+  get "cart/show"
   get "categories/show"
   devise_for :admin_users, ActiveAdmin::Devise.config
   ActiveAdmin.routes(self)
@@ -14,13 +15,18 @@ Rails.application.routes.draw do
   resources :products, only: [:index, :show]
   resources :categories, only: [:show]
 
+
+# Cart-related routes
   resource :cart, only: [:show] do
-    post 'add/:product_id', to: 'carts#add', as: :add_to
-    patch 'update/:product_id', to: 'carts#update', as: :update_item
-    delete 'remove/:product_id', to: 'carts#remove', as: :remove_item
+    post "add/:product_id", to: "cart#add_item", as: :add_item
+    patch "update/:product_id", to: "cart#update_quantity", as: :update_item
+    delete "remove/:product_id", to: "cart#remove_item", as: :remove_item
   end
-  
+
   resources :orders, only: [:new, :create, :index, :show]
+
+get "/pages/:slug", to: "pages#show", as: "page"
+
 
   # Health & PWA endpoints (optional but good)
   get "up" => "rails/health#show", as: :rails_health_check

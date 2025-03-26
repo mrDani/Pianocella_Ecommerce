@@ -1,19 +1,25 @@
-class CartController < ApplicationController
+class CartsController < ApplicationController
   before_action :set_cart
 
   def show
-    @cart_items = Product.find(@cart.keys).map do |product|
-      {
-        product: product,
-        quantity: @cart[product.id.to_s],
-        subtotal: product.price * @cart[product.id.to_s]
-      }
+    @cart_items = []
+
+    if @cart.present?
+      products = Product.where(id: @cart.keys)
+      @cart_items = products.map do |product|
+        quantity = @cart[product.id.to_s].to_i
+        {
+          product: product,
+          quantity: quantity,
+          subtotal: product.price * quantity
+        }
+      end
     end
   end
 
   def add_item
     id = params[:product_id].to_s
-    @cart[id] = (@cart[id] || 0) + 1
+    @cart[id] = (@cart[id] || 0) + params[:quantity].to_i
     save_cart
     redirect_to cart_path, notice: "Product added to cart."
   end
@@ -42,3 +48,4 @@ class CartController < ApplicationController
     session[:cart] = @cart
   end
 end
+

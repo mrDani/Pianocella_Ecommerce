@@ -9,8 +9,6 @@
 #   end
 # AdminUser.create!(email: 'admin@example.com', password: 'password', password_confirmation: 'password') if Rails.env.development?
 
-
-
 require 'csv'
 require 'open-uri'
 
@@ -40,3 +38,16 @@ csv.each do |row|
 end
 
 puts "Successfully seeded #{Product.count} piano products!"
+
+
+# i ran this later in my implemntation 
+Page.find_or_create_by(slug: "about") do |page|
+    page.title = "About Us"
+    page.content = "This is the About Us page."
+  end
+  
+  Page.find_or_create_by(slug: "contact") do |page|
+    page.title = "Contact"
+    page.content = "This is the Contact page."
+  end
+  

@@ -14,5 +14,13 @@ ActiveAdmin.register Review do
   #   permitted << :other if params[:action] == 'create' && current_user.admin?
   #   permitted
   # end
+
+  remove_filter :order
+  remove_filter :some_other_association 
+
+  filter :content
+  filter :rating
+  filter :product
+  filter :user
   
 end
