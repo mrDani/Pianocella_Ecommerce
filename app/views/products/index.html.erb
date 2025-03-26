@@ -5,19 +5,41 @@
   <%= link_to "📅 Recently Updated", products_path(q: { updated_at_gteq: 1.week.ago }), class: "btn btn-outline-success" %>
 </div>
 
-<div class="row justify-content-center mb-5">
-  <div class="col-md-6">
-    <%= search_form_for @q, url: products_path, method: :get do |f| %>
-      <div class="input-group">
-        <%= f.search_field :name_or_description_cont, class: "form-control", placeholder: "Search products..." %>
-        <button class="btn btn-primary" type="submit">Search</button>
-      </div>
-    <% end %>
+<div class="d-flex justify-content-center my-4">
+  <%= form_with url: products_path, method: :get, local: true, class: "d-flex align-items-center gap-2 w-100 justify-content-center", style: "max-width: 600px;" do %>
+
+    <div style="width: 40%;">
+      <select name="category_id" class="form-select form-select-sm">
+        <option value="">All Categories</option>
+        <% Category.all.each do |category| %>
+          <option value="<%= category.id %>" <%= "selected" if params[:category_id].to_s == category.id.to_s %>>
+            <%= category.name %>
+          </option>
+        <% end %>
+      </select>
+    </div>
+
+    <div style="width: 40%;">
+      <%= text_field_tag :query, params[:query], placeholder: "Search products...", class: "form-control form-control-sm" %>
+    </div>
+
+    <div>
+      <%= submit_tag "Search", class: "btn btn-sm btn-primary" %>
+    </div>
+
+  <% end %>
+</div>
+
+<% if @products.any? %>
+  <%= render partial: 'product_list', locals: { products: @products } %>
+
+  <div class="d-flex justify-content-center mt-4">
+    <%= paginate @products %>
   </div>
-</div>
-
-<%= render partial: 'product_list', locals: { products: @products } %>
-
-<div class="d-flex justify-content-center mt-4">
-  <%= paginate @products %>
-</div>
+<% else %>
+  <div class="alert alert-warning text-center mt-5">
+    <h5>No products found.</h5>
+    <p class="text-muted">Try adjusting your search keywords or category filter.</p>
+    <%= link_to "Back to All Products", products_path, class: "btn btn-sm btn-outline-secondary mt-2" %>
+  </div>
+<% end %>
