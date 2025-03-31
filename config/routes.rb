@@ -25,6 +25,7 @@ Rails.application.routes.draw do
 
   resources :orders, only: [:new, :create, :index, :show]
 
+
   get "/pages/:slug", to: "pages#show", as: "page"
 
   # Health & PWA endpoints (optional but good)

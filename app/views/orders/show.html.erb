@@ -1,60 +1,33 @@
-<!-- app/views/orders/new.html.erb -->
+<h1>Order Confirmation</h1>
 
-<h1 class="mb-4 text-center fw-bold">Confirm Your Order</h1>
+<p><strong>Order ID:</strong> <%= @order.id %></p>
+<p><strong>Status:</strong> <%= @order.status %></p>
+<p><strong>Address:</strong> <%= @order.address %></p>
+<p><strong>City:</strong> <%= @order.city %></p>
+<p><strong>Province:</strong> <%= @order.province %></p>
+<p><strong>Postal Code:</strong> <%= @order.postal_code %></p>
+<p><strong>Total Price:</strong> $<%= @order.total_price %></p>
 
-<!-- Display the Cart Summary -->
-<table class="table table-bordered table-striped mb-4">
+<h2>Ordered Products</h2>
+<table class="table">
   <thead>
     <tr>
       <th>Product</th>
       <th>Quantity</th>
-      <th>Price</th>
+      <th>Unit Price</th>
       <th>Subtotal</th>
     </tr>
   </thead>
   <tbody>
-    <% @cart_items.each do |item| %>
+    <% @order.order_items.each do |item| %>
       <tr>
-        <td><%= item[:product].name %></td>
-        <td><%= item[:quantity] %></td>
-        <td>$<%= number_with_precision(item[:product].price, precision: 2) %></td>
-        <td>$<%= number_with_precision(item[:subtotal], precision: 2) %></td>
+        <td><%= item.product.name %></td>
+        <td><%= item.quantity %></td>
+        <td>$<%= item.unit_price %></td>
+        <td>$<%= item.quantity * item.unit_price %></td>
       </tr>
     <% end %>
-    <tr>
-      <td colspan="3" class="text-end"><strong>Total:</strong></td>
-      <td><strong>$<%= number_with_precision(@total_price, precision: 2) %></strong></td>
-    </tr>
   </tbody>
 </table>
 
-<%= form_with url: orders_path, method: :post, local: true do |f| %>
-    <h2>Shipping Details</h2>
-    
-    <div class="mb-3">
-      <%= f.label :address, "Address", class: "form-label" %>
-      <%= f.text_field :address, value: current_user.address, class: "form-control", required: true %>
-    </div>
-  
-    <div class="mb-3">
-      <%= f.label :city, "City", class: "form-label" %>
-      <%= f.text_field :city, value: current_user.city, class: "form-control", required: true %>
-    </div>
-  
-    <div class="mb-3">
-      <%= f.label :province, "Province", class: "form-label" %>
-      <%= f.select :province, ["Alberta", "British Columbia", "Manitoba", "New Brunswick", "Newfoundland and Labrador", 
-        "Northwest Territories", "Nova Scotia", "Nunavut", "Ontario", "Prince Edward Island", "Quebec", "Saskatchewan", "Yukon"], 
-        { selected: current_user.province }, class: "form-select", required: true %>
-    </div>
-  
-    <div class="mb-3">
-      <%= f.label :postal_code, "Postal Code", class: "form-label" %>
-      <%= f.text_field :postal_code, value: current_user.postal_code, class: "form-control", required: true %>
-    </div>
-  
-    <div class="mb-3">
-      <%= f.submit "Place Order", class: "btn btn-success" %>
-    </div>
-  <% end %>
-  
+<%= link_to "Back to Orders", orders_path, class: "btn btn-primary" %>
