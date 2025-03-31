@@ -9,8 +9,15 @@ class ApplicationController < ActionController::Base
   protected
 
   def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:address, :province])
-    devise_parameter_sanitizer.permit(:account_update, keys: [:address, :province])
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:username, :email, :password, :password_confirmation, :address, :province])
+    devise_parameter_sanitizer.permit(:account_update, keys: [:username, :email, :password, :password_confirmation, :current_password, :address, :province])
+  end
+
+  # Only authenticate admin users for ActiveAdmin pages
+  def authenticate_admin_user!
+    if current_user.nil? || !current_user.admin?
+      redirect_to root_path, alert: "Access Denied. You are not an admin."
+    end
   end
 
 end

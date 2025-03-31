@@ -5,4 +5,9 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
   has_many :orders
   has_many :reviews
+  validates :username, presence: true, uniqueness: true
+
+  def admin?
+    self.admin == true
+  end
 end

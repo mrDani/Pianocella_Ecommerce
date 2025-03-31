@@ -8,8 +8,10 @@ Rails.application.routes.draw do
   get "categories/show"
   devise_for :admin_users, ActiveAdmin::Devise.config
   ActiveAdmin.routes(self)
-  devise_for :users
 
+  devise_for :users, controllers: { sessions: 'devise/sessions', registrations: 'devise/registrations' }
+
+  #for products 
   root "products#index" # Front page = all products
 
   resources :products, only: [:index, :show]

@@ -349,4 +349,12 @@ ActiveAdmin.setup do |config|
   # You can switch to using Webpacker here.
   #
   # config.use_webpacker = true
+
+  config.current_user_method = :current_admin_user
+
+  # Ensure only admins can access ActiveAdmin
+  def authenticate_admin_user!
+    redirect_to root_path, alert: "You are not authorized to access this page." unless current_user&.admin?
+  end
+
 end
