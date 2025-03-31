@@ -1,25 +1,46 @@
-<h1>Order #<%= @order.id %></h1>
-<p>Status: <strong><%= @order.status.capitalize %></strong></p>
+<!-- app/views/orders/new.html.erb -->
 
-<table class="table">
+<h1 class="mb-4 text-center fw-bold">Confirm Your Order</h1>
+
+<!-- Display the Cart Summary -->
+<table class="table table-bordered table-striped mb-4">
   <thead>
     <tr>
       <th>Product</th>
-      <th>Qty</th>
-      <th>Unit Price</th>
+      <th>Quantity</th>
+      <th>Price</th>
       <th>Subtotal</th>
     </tr>
   </thead>
   <tbody>
-    <% @order.order_items.each do |item| %>
+    <% @cart_items.each do |item| %>
       <tr>
-        <td><%= item.product.name %></td>
-        <td><%= item.quantity %></td>
-        <td>$<%= item.unit_price %></td>
-        <td>$<%= item.quantity * item.unit_price %></td>
+        <td><%= item[:product].name %></td>
+        <td><%= item[:quantity] %></td>
+        <td>$<%= number_with_precision(item[:product].price, precision: 2) %></td>
+        <td>$<%= number_with_precision(item[:subtotal], precision: 2) %></td>
       </tr>
     <% end %>
+    <tr>
+      <td colspan="3" class="text-end"><strong>Total:</strong></td>
+      <td><strong>$<%= number_with_precision(@total_price, precision: 2) %></strong></td>
+    </tr>
   </tbody>
 </table>
 
-<p><strong>Total:</strong> $<%= @order.total_price %></p>
+<!-- Order Form -->
+<%= form_with model: @order, url: orders_path, method: :post, local: true, class: "mb-4" do |f| %>
+  <div class="mb-3">
+    <%= f.label :address, "Shipping Address", class: "form-label" %>
+    <%= f.text_area :address, value: current_user.address, class: "form-control", rows: 3, placeholder: "Enter your shipping address", required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :province, "Province", class: "form-label" %>
+    <%= f.select :province, ['Ontario', 'Manitoba', 'British Columbia', 'Quebec', 'Alberta'], { selected: current_user.province }, class: "form-select", required: true %>
+  </div>
+
+  <div class="text-center">
+    <%= f.submit "Place Order", class: "btn btn-success" %>
+  </div>
+<% end %>

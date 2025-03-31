@@ -1,54 +1,79 @@
 class OrdersController < ApplicationController
   before_action :authenticate_user!
+  before_action :set_cart, only: [:new, :create]
 
   def new
-    @cart = session[:cart] || {}
-    @cart_items = Product.find(@cart.keys).map do |product|
-      {
-        product: product,
-        quantity: @cart[product.id.to_s].to_i
-      }
+    if @cart.empty?
+      redirect_to cart_path, alert: "Your cart is empty. Add products to proceed."
+      return
     end
+
+    @cart_items = fetch_cart_items
+    @total_price = @cart_items.sum { |item| item[:subtotal] }
+    @order = Order.new
   end
 
   def create
-    cart = session[:cart] || {}
-    if cart.empty?
+    if @cart.empty?
       redirect_to cart_path, alert: "Your cart is empty"
       return
     end
 
-    @order = current_user.orders.build(
-      address: current_user.address,
-      province: current_user.province,
-      status: "pending",
-      total_price: 0
-    )
-
-    cart.each do |product_id, quantity|
-      product = Product.find(product_id)
-      @order.order_items.build(
-        product: product,
-        quantity: quantity,
-        unit_price: product.price
-      )
-    end
-
-    @order.total_price = @order.order_items.sum { |item| item.quantity * item.unit_price }
+    @order = current_user.orders.build(order_params)
+    @order.status = "pending"
+    @order.total_price = fetch_cart_items.sum { |item| item[:subtotal] }
 
     if @order.save
-      session[:cart] = {} # clear cart
-      redirect_to @order, notice: "Order placed successfully!"
+      save_cart_items_to_order(@order)
+      current_user.update(address: params[:order][:address], province: params[:order][:province])
+      
+      session[:cart] = {} # Clear the cart
+      redirect_to order_path(@order), notice: "Order placed successfully!"
     else
+      @cart_items = fetch_cart_items
       render :new, status: :unprocessable_entity
     end
   end
 
   def index
-    @orders = current_user.orders.includes(:order_items)
+    @orders = current_user.orders.includes(:order_items).order(created_at: :desc)
   end
 
   def show
     @order = current_user.orders.find(params[:id])
+  end
+
+  private
+
+  def set_cart
+    session[:cart] ||= {}
+    @cart = session[:cart]
+  end
+
+  def fetch_cart_items
+    products = Product.where(id: @cart.keys)
+    products.map do |product|
+      quantity = @cart[product.id.to_s].to_i
+      {
+        product: product,
+        quantity: quantity,
+        subtotal: product.price * quantity
+      }
+    end
+  end
+
+  def save_cart_items_to_order(order)
+    @cart.each do |product_id, quantity|
+      product = Product.find(product_id)
+      order.order_items.create(
+        product: product,
+        quantity: quantity,
+        unit_price: product.price
+      )
+    end
+  end
+
+  def order_params
+    params.require(:order).permit(:address, :province)
   end
 end
