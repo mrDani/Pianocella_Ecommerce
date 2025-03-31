@@ -23,8 +23,8 @@ class OrdersController < ApplicationController
     @order.status = "pending"
     @order.total_price = fetch_cart_items.sum { |item| item[:subtotal] }
   
-    puts "🔍 Order Parameters Received: #{order_params.inspect}"
-    puts "🔥🔥🔥 Order Built: #{@order.inspect}"
+    puts "Order Parameters Received: #{order_params.inspect}"
+    puts "Order Built: #{@order.inspect}"
     
     if @order.save
       puts "✅ Order saved successfully!"

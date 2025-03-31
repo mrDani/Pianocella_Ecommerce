@@ -30,10 +30,16 @@
         <li class="nav-item">
         <%= link_to "Contact", page_path("contact"), class: "nav-link" %>
         </li>
-
-        <li class="nav-item">
+        
+        <% if user_signed_in? %>
+          <li class="nav-item">
+            <%= link_to "My Orders", orders_path, class: "nav-link fw-semibold text-dark" %>
+          </li>
+          <li class="nav-item">
             <%= link_to "🛒 Cart", cart_path, class: "nav-link fw-semibold text-dark" %>
-        </li>
+          </li>
+        <% end %>
+
         <% if user_signed_in? %>
         <li class="nav-item">
         <%= link_to 'Logout', destroy_user_session_path, method: :delete, data: { turbo_method: :delete } %>

@@ -2,7 +2,7 @@ class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
-  before_action :configure_permitted_parameters, if: :devise_controller?
+  # before_action :configure_permitted_parameters, if: :devise_controller?
 
   before_action :authenticate_user!
 
@@ -14,10 +14,10 @@ class ApplicationController < ActionController::Base
   end
 
   # Only authenticate admin users for ActiveAdmin pages
-  def authenticate_admin_user!
-    if current_user.nil? || !current_user.admin?
-      redirect_to root_path, alert: "Access Denied. You are not an admin."
-    end
-  end
+  # def authenticate_admin_user!
+  #   if current_user.nil? || !current_user.admin?
+  #     redirect_to root_path, alert: "Access Denied. You are not an admin."
+  #   end
+  # end
 
 end

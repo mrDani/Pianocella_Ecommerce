@@ -20,7 +20,7 @@ class ProductsController < ApplicationController
   end
   
   def show
-    # The @product is already set by the set_product method below.
+    
   end
 
   private
