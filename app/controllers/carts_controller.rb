@@ -48,4 +48,3 @@ class CartsController < ApplicationController
     session[:cart] = @cart
   end
 end
-

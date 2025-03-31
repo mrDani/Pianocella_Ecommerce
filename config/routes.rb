@@ -6,29 +6,26 @@ Rails.application.routes.draw do
   get "orders/show"
   get "cart/show"
   get "categories/show"
+  
   devise_for :admin_users, ActiveAdmin::Devise.config
   ActiveAdmin.routes(self)
-
   devise_for :users, controllers: { sessions: 'devise/sessions', registrations: 'devise/registrations' }
 
-  #for products 
-  root "products#index" # Front page = all products
-
+  # For products
+  root "products#index"
   resources :products, only: [:index, :show]
   resources :categories, only: [:show]
 
-
-# Cart-related routes
-  resource :cart, only: [:show] do
-    post "add/:product_id", to: "cart#add_item", as: :add_item
-    patch "update/:product_id", to: "cart#update_quantity", as: :update_item
-    delete "remove/:product_id", to: "cart#remove_item", as: :remove_item
+  # Cart-related routes (Fixing issue here)
+  resource :cart, only: [:show], controller: 'carts' do
+    post "add/:product_id", to: "carts#add_item", as: :add_item
+    patch "update/:product_id", to: "carts#update_quantity", as: :update_item
+    delete "remove/:product_id", to: "carts#remove_item", as: :remove_item
   end
 
   resources :orders, only: [:new, :create, :index, :show]
 
-get "/pages/:slug", to: "pages#show", as: "page"
-
+  get "/pages/:slug", to: "pages#show", as: "page"
 
   # Health & PWA endpoints (optional but good)
   get "up" => "rails/health#show", as: :rails_health_check

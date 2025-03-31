@@ -1,10 +1,11 @@
-<h1>Confirm Your Order</h1>
+<h1 class="mb-4 text-center fw-bold">Confirm Your Order</h1>
 
-<table class="table">
+<!-- Display the Cart Summary -->
+<table class="table table-bordered table-striped mb-4">
   <thead>
     <tr>
       <th>Product</th>
-      <th>Qty</th>
+      <th>Quantity</th>
       <th>Price</th>
       <th>Subtotal</th>
     </tr>
@@ -14,15 +15,30 @@
       <tr>
         <td><%= item[:product].name %></td>
         <td><%= item[:quantity] %></td>
-        <td>$<%= item[:product].price %></td>
-        <td>$<%= item[:product].price * item[:quantity] %></td>
+        <td>$<%= number_with_precision(item[:product].price, precision: 2) %></td>
+        <td>$<%= number_with_precision(item[:subtotal], precision: 2) %></td>
       </tr>
     <% end %>
+    <tr>
+      <td colspan="3" class="text-end"><strong>Total:</strong></td>
+      <td><strong>$<%= number_with_precision(@total_price, precision: 2) %></strong></td>
+    </tr>
   </tbody>
 </table>
 
-<%= form_with url: orders_path, method: :post do %>
-  <p><strong>Address:</strong> <%= current_user.address %></p>
-  <p><strong>Province:</strong> <%= current_user.province %></p>
-  <%= submit_tag "Place Order", class: "btn btn-success" %>
+<!-- Order Form -->
+<%= form_with model: @order, url: orders_path, method: :post, local: true, class: "mb-4" do |f| %>
+  <div class="mb-3">
+    <%= f.label :address, "Shipping Address", class: "form-label" %>
+    <%= f.text_area :address, value: current_user.address, class: "form-control", rows: 3, placeholder: "Enter your shipping address", required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :province, "Province", class: "form-label" %>
+    <%= f.select :province, ['Ontario', 'Manitoba', 'British Columbia', 'Quebec', 'Alberta'], { selected: current_user.province }, class: "form-select", required: true %>
+  </div>
+
+  <div class="text-center">
+    <%= f.submit "Place Order", class: "btn btn-success" %>
+  </div>
 <% end %>
