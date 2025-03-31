@@ -28,19 +28,33 @@
   </tbody>
 </table>
 
-<!-- Order Form -->
-<%= form_with model: @order, url: orders_path, method: :post, local: true, class: "mb-4" do |f| %>
-  <div class="mb-3">
-    <%= f.label :address, "Shipping Address", class: "form-label" %>
-    <%= f.text_area :address, value: current_user.address, class: "form-control", rows: 3, placeholder: "Enter your shipping address", required: true %>
-  </div>
-
-  <div class="mb-3">
-    <%= f.label :province, "Province", class: "form-label" %>
-    <%= f.select :province, ['Ontario', 'Manitoba', 'British Columbia', 'Quebec', 'Alberta'], { selected: current_user.province }, class: "form-select", required: true %>
-  </div>
-
-  <div class="text-center">
-    <%= f.submit "Place Order", class: "btn btn-success" %>
-  </div>
-<% end %>
+<%= form_with url: orders_path, method: :post, local: true do |f| %>
+    <h2>Shipping Details</h2>
+    
+    <div class="mb-3">
+      <%= f.label :address, "Address", class: "form-label" %>
+      <%= f.text_field :address, value: current_user.address, class: "form-control", required: true %>
+    </div>
+  
+    <div class="mb-3">
+      <%= f.label :city, "City", class: "form-label" %>
+      <%= f.text_field :city, value: current_user.city, class: "form-control", required: true %>
+    </div>
+  
+    <div class="mb-3">
+      <%= f.label :province, "Province", class: "form-label" %>
+      <%= f.select :province, ["Alberta", "British Columbia", "Manitoba", "New Brunswick", "Newfoundland and Labrador", 
+        "Northwest Territories", "Nova Scotia", "Nunavut", "Ontario", "Prince Edward Island", "Quebec", "Saskatchewan", "Yukon"], 
+        { selected: current_user.province }, class: "form-select", required: true %>
+    </div>
+  
+    <div class="mb-3">
+      <%= f.label :postal_code, "Postal Code", class: "form-label" %>
+      <%= f.text_field :postal_code, value: current_user.postal_code, class: "form-control", required: true %>
+    </div>
+  
+    <div class="mb-3">
+      <%= f.submit "Place Order", class: "btn btn-success" %>
+    </div>
+  <% end %>
+  

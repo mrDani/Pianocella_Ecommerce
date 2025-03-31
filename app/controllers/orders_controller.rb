@@ -25,8 +25,15 @@ class OrdersController < ApplicationController
 
     if @order.save
       save_cart_items_to_order(@order)
-      current_user.update(address: params[:order][:address], province: params[:order][:province])
-      
+
+      # Save the shipping details to the user model if desired (Optional)
+      current_user.update(
+        address: @order.address,
+        city: @order.city,
+        province: @order.province,
+        postal_code: @order.postal_code
+      )
+
       session[:cart] = {} # Clear the cart
       redirect_to order_path(@order), notice: "Order placed successfully!"
     else
@@ -74,6 +81,6 @@ class OrdersController < ApplicationController
   end
 
   def order_params
-    params.require(:order).permit(:address, :province)
+    params.require(:order).permit(:address, :city, :province, :postal_code)
   end
 end

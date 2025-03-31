@@ -6,7 +6,11 @@ class User < ApplicationRecord
   has_many :orders
   has_many :reviews
   validates :username, presence: true, uniqueness: true
-
+  validates :address, presence: true
+  validates :province, presence: true
+  validates :city, presence: true
+  validates :postal_code, presence: true
+  
   def admin?
     self.admin == true
   end
