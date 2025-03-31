@@ -7,10 +7,11 @@ Rails.application.routes.draw do
   get "cart/show"
   get "categories/show"
   
+  devise_for :users
   devise_for :admin_users, ActiveAdmin::Devise.config
   ActiveAdmin.routes(self)
-  
-  devise_for :users, controllers: { sessions: 'devise/sessions', registrations: 'devise/registrations' }
+
+  #devise_for :users, controllers: { sessions: 'devise/sessions', registrations: 'devise/registrations' }
 
   # For products
   root "products#index"

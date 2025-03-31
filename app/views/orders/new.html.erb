@@ -27,25 +27,35 @@
 </table>
 
 
-<%= form_with model: @order, url: orders_path, method: :post, local: true do |f| %>
+<%= form_with url: orders_path, method: :post do |f| %>
+    <div class="mb-3">
+      <%= f.label :name, "Full Name", class: "form-label" %>
+      <%= f.text_field :name, class: "form-control", required: true %>
+    </div>
+  
+    <div class="mb-3">
+      <%= f.label :email, "Email", class: "form-label" %>
+      <%= f.email_field :email, class: "form-control", required: true %>
+    </div>
+  
     <div class="mb-3">
       <%= f.label :shipping_address, "Shipping Address", class: "form-label" %>
-      <%= f.text_field :shipping_address, value: current_user.address, class: "form-control", required: true %>
+      <%= f.text_field :shipping_address, class: "form-control", required: true %>
     </div>
   
     <div class="mb-3">
       <%= f.label :city, "City", class: "form-label" %>
-      <%= f.text_field :city, value: current_user.city, class: "form-control", required: true %>
+      <%= f.text_field :city, class: "form-control", required: true %>
     </div>
   
     <div class="mb-3">
       <%= f.label :province, "Province", class: "form-label" %>
-      <%= f.select :province, ["Alberta", "British Columbia", "Manitoba", "New Brunswick", "Newfoundland and Labrador", "Northwest Territories", "Nova Scotia", "Nunavut", "Ontario", "Prince Edward Island", "Quebec", "Saskatchewan", "Yukon"], {}, class: "form-control", required: true %>
+      <%= f.select :province, ['Manitoba', 'Ontario', 'Alberta', 'British Columbia', 'Quebec'], {}, class: "form-control", required: true %>
     </div>
   
     <div class="mb-3">
       <%= f.label :postal_code, "Postal Code", class: "form-label" %>
-      <%= f.text_field :postal_code, value: current_user.postal_code, class: "form-control", required: true %>
+      <%= f.text_field :postal_code, class: "form-control", required: true %>
     </div>
   
     <div class="mb-3">

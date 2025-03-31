@@ -1,5 +1,6 @@
 class CartsController < ApplicationController
-  before_action :set_cart
+  # before_action :set_cart
+  skip_before_action :authenticate_user!, only: [:show, :add_item, :update_quantity, :remove_item]
 
   def show
     @cart_items = []
