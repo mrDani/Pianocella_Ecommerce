@@ -13,6 +13,7 @@ Rails.application.routes.draw do
 
   #devise_for :users, controllers: { sessions: 'devise/sessions', registrations: 'devise/registrations' }
 
+
   # For products
   root "products#index"
   resources :products, only: [:index, :show]

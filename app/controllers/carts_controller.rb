@@ -1,6 +1,6 @@
 class CartsController < ApplicationController
-  # before_action :set_cart
   skip_before_action :authenticate_user!, only: [:show, :add_item, :update_quantity, :remove_item]
+  before_action :set_cart
 
   def show
     @cart_items = []
@@ -22,17 +22,18 @@ class CartsController < ApplicationController
     id = params[:product_id].to_s
     @cart[id] = (@cart[id] || 0) + params[:quantity].to_i
     save_cart
-    redirect_to cart_path, notice: "Product added to cart."
+    redirect_to cart_path, notice: "Product added to cart." # Redirecting to cart_path instead of checkout
   end
-
   def update_quantity
     id = params[:product_id].to_s
+    @cart ||= {}
     @cart[id] = params[:quantity].to_i
     save_cart
     redirect_to cart_path, notice: "Cart updated."
   end
 
   def remove_item
+    @cart ||= {}
     @cart.delete(params[:product_id].to_s)
     save_cart
     redirect_to cart_path, notice: "Product removed."

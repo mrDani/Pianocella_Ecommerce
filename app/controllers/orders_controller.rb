@@ -2,6 +2,14 @@ class OrdersController < ApplicationController
   before_action :set_cart, only: [:new, :create]
   skip_before_action :authenticate_user!, only: [:new, :create]
 
+  def index
+    if current_user
+      @orders = current_user.orders.includes(:order_items).order(created_at: :desc)
+    else
+      @orders = []
+    end
+  end
+
   def new
     if @cart.empty?
       redirect_to cart_path, alert: "Your cart is empty. Add products to proceed."
