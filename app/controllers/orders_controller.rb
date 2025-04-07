@@ -27,9 +27,12 @@ class OrdersController < ApplicationController
       return
     end
 
+    order_params = params.require(:order).permit(:name, :email, :shipping_address, :city, :province, :postal_code)
+
     @order = Order.new(order_params)
     @order.status = "pending"
     @order.total_price = fetch_cart_items.sum { |item| item[:subtotal] }
+    @order.user = current_user if user_signed_in?  # Associate order with user if logged in
 
     if @order.save
       save_cart_items_to_order(@order)
