@@ -1,16 +1,21 @@
 <h1>My Orders</h1>
 
-<% if @orders.present? %>
+<% if @orders.any? %>
   <% @orders.each do |order| %>
     <div class="card mb-3">
       <div class="card-body">
-        <h5 class="card-title">Order #<%= order.id %> - <%= order.status.capitalize %></h5>
-        <p>Total Price: $<%= number_with_precision(order.total_price, precision: 2) %></p>
-        <p>Placed on: <%= order.created_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+        <h5 class="card-title">
+          Order #<%= order.id %> - <%= order.status.capitalize %>
+          <% if order.user_id.nil? %>
+            (Guest Order)
+          <% end %>
+        </h5>
+        <p><strong>Shipping Address:</strong> <%= order.shipping_address %></p>
+        <p><strong>Total Price:</strong> $<%= order.total_price %></p>
         <%= link_to "View Order", order_path(order), class: "btn btn-primary" %>
       </div>
     </div>
   <% end %>
 <% else %>
-  <p>You have not placed any orders yet.</p>
+  <p>No orders found.</p>
 <% end %>

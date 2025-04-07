@@ -1,12 +1,12 @@
 class OrdersController < ApplicationController
   before_action :set_cart, only: [:new, :create]
-  skip_before_action :authenticate_user!, only: [:new, :create]
+  skip_before_action :authenticate_user!, only: [:new, :create, :success]
 
   def index
-    if current_user
+    if user_signed_in?
       @orders = current_user.orders.includes(:order_items).order(created_at: :desc)
     else
-      @orders = []
+      @orders = Order.where(user_id: nil).order(created_at: :desc)
     end
   end
 
@@ -37,14 +37,35 @@ class OrdersController < ApplicationController
     if @order.save
       save_cart_items_to_order(@order)
       session[:cart] = {} # Clear the cart
-      # redirect_to order_path(@order), notice: "Order placed successfully!"
-    redirect_to orders_path, notice: "Order placed successfully!"
+
+      if user_signed_in?
+        redirect_to orders_path, notice: "Order placed successfully!"
+      else
+        redirect_to order_success_path(order_id: @order.id), notice: "Order placed successfully!" # Guest users redirected to success page
+      end
     else
       @cart_items = fetch_cart_items
       render :new, status: :unprocessable_entity
     end
   end
-  
+
+  def show
+    @order = Order.find_by(id: params[:id])
+
+    if @order.nil?
+      # redirect_to orders_path, alert: "Order not found."
+      redirect_to orders_path
+    end
+  end
+
+  def success
+    @order = Order.find_by(id: params[:order_id])
+
+    if @order.nil?
+      # redirect_to root_path, alert: "Order not found."
+      redirect_to root_path
+    end
+  end
 
   private
 
@@ -79,12 +100,4 @@ class OrdersController < ApplicationController
   def order_params
     params.require(:order).permit(:name, :email, :shipping_address, :city, :province, :postal_code)
   end
-  def show
-    @order = Order.find_by(id: params[:id])
-  
-    if @order.nil?
-      redirect_to orders_path, alert: "Order not found."
-    end
-  end
-  
 end

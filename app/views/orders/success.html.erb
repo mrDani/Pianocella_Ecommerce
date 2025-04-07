@@ -1,0 +1,13 @@
+<h1>Order Confirmation</h1>
+<p>Thank you for your order!</p>
+<p>Your order has been successfully placed.</p>
+
+<p><strong>Order Details:</strong></p>
+<ul>
+  <li><strong>Name:</strong> <%= @order.name %></li>
+  <li><strong>Email:</strong> <%= @order.email %></li>
+  <li><strong>Shipping Address:</strong> <%= @order.shipping_address %>, <%= @order.city %>, <%= @order.province %>, <%= @order.postal_code %></li>
+  <li><strong>Total Price:</strong> $<%= @order.total_price %></li>
+</ul>
+
+<%= link_to "Go to My Orders", orders_path, class: "btn btn-primary" %>

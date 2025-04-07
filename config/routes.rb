@@ -26,8 +26,15 @@ Rails.application.routes.draw do
     delete "remove/:product_id", to: "carts#remove_item", as: :remove_item
   end
 
-  resources :orders, only: [:new, :create, :index, :show]
 
+  resources :orders, only: [:new, :create, :index, :show]
+  get 'orders/success', to: 'orders#success', as: 'order_success'
+  # resources :orders, only: [:new, :create, :index, :show] do
+  #   get 'success', on: :collection, as: :success
+  # end
+  
+  
+  
 
   get "/pages/:slug", to: "pages#show", as: "page"
 
