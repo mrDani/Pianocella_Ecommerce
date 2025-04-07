@@ -43,6 +43,7 @@ class OrdersController < ApplicationController
       render :new, status: :unprocessable_entity
     end
   end
+  
 
   private
 
@@ -75,6 +76,6 @@ class OrdersController < ApplicationController
   end
 
   def order_params
-    params.require(:order).permit(:name, :shipping_address, :city, :province, :postal_code, :email)
+    params.require(:order).permit(:name, :email, :shipping_address, :city, :province, :postal_code)
   end
 end

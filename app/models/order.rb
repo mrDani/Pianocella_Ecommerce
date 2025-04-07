@@ -28,6 +28,7 @@ class Order < ApplicationRecord
   end
 
   def self.ransackable_associations(auth_object = nil)
-    %w[user order_items]
+    %w[order_items user]
   end
+end
 end
