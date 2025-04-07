@@ -31,4 +31,3 @@ class Order < ApplicationRecord
     %w[order_items user]
   end
 end
-end

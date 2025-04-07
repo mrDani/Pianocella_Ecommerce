@@ -37,7 +37,8 @@ class OrdersController < ApplicationController
     if @order.save
       save_cart_items_to_order(@order)
       session[:cart] = {} # Clear the cart
-      redirect_to order_path(@order), notice: "Order placed successfully!"
+      # redirect_to order_path(@order), notice: "Order placed successfully!"
+    redirect_to orders_path, notice: "Order placed successfully!"
     else
       @cart_items = fetch_cart_items
       render :new, status: :unprocessable_entity
@@ -78,4 +79,12 @@ class OrdersController < ApplicationController
   def order_params
     params.require(:order).permit(:name, :email, :shipping_address, :city, :province, :postal_code)
   end
+  def show
+    @order = Order.find_by(id: params[:id])
+  
+    if @order.nil?
+      redirect_to orders_path, alert: "Order not found."
+    end
+  end
+  
 end
