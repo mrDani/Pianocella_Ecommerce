@@ -3,11 +3,7 @@ class OrdersController < ApplicationController
   skip_before_action :authenticate_user!, only: [:new, :create, :success]
 
   def index
-    if user_signed_in?
-      @orders = current_user.orders.includes(:order_items).order(created_at: :desc)
-    else
-      @orders = Order.where(user_id: nil).order(created_at: :desc)
-    end
+    @orders = user_signed_in? ? current_user.orders.includes(:order_items).order(created_at: :desc) : Order.where(user_id: nil).order(created_at: :desc)
   end
 
   def new
@@ -15,37 +11,33 @@ class OrdersController < ApplicationController
       redirect_to cart_path, alert: "Your cart is empty. Add products to proceed."
       return
     end
-  
+
     @cart_items = fetch_cart_items
     @total_price = @cart_items.sum { |item| item[:subtotal] }
-  
-    if user_signed_in?
-      @order = Order.new(
-        name: current_user.username,
-        email: current_user.email,
-        shipping_address: current_user.address,
-        city: current_user.city,
-        province: current_user.province&.name || current_user.province,
-        postal_code: current_user.postal_code
-      )
-    else
-      @order = Order.new
-    end
+
+    @order = if user_signed_in?
+               Order.new(
+                 name: current_user.username,
+                 email: current_user.email,
+                 shipping_address: current_user.address,
+                 city: current_user.city,
+                 province: current_user.province&.name || current_user.province,
+                 postal_code: current_user.postal_code
+               )
+             else
+               Order.new
+             end
   end
-  
 
   def create
     if @cart.empty?
       redirect_to cart_path, alert: "Your cart is empty"
       return
     end
-  
+
     order_params = params.require(:order).permit(:name, :email, :shipping_address, :city, :province, :postal_code)
-  
-    # Calculate base subtotal
     base_total = fetch_cart_items.sum { |item| item[:subtotal] }
-  
-    # Determine tax rates based on province
+
     pst_rate = case order_params[:province]
                when "Manitoba" then 0.07
                when "Alberta" then 0.00
@@ -56,23 +48,20 @@ class OrdersController < ApplicationController
                when "New Brunswick", "Newfoundland and Labrador", "Nova Scotia", "Prince Edward Island" then 0.10
                else 0.00
                end
-  
+
     gst_rate = 0.05
-  
-    # Tax calculations
     pst = base_total * pst_rate
     gst = base_total * gst_rate
     total_with_taxes = base_total + pst + gst
-  
-    # Build order with tax data
+
     @order = Order.new(order_params)
     @order.status = "pending"
     @order.pst = pst
     @order.gst = gst
-    @order.total_price = total_with_taxes # <-- Save final total here
+    @order.total_price = total_with_taxes
     @order.total_with_taxes = total_with_taxes
     @order.user = current_user if user_signed_in?
-    
+
     if user_signed_in?
       current_user.update(
         address: @order.shipping_address,
@@ -81,43 +70,27 @@ class OrdersController < ApplicationController
         province: Province.find_by(name: @order.province)
       )
     end
-    
+
     if @order.save
       save_cart_items_to_order(@order)
       session[:cart] = {}
-  
-      if user_signed_in?
-        redirect_to orders_path, notice: "Order placed successfully!"
-      else
-        redirect_to order_success_path(order_id: @order.id), notice: "Order placed successfully!"
-      end
+
+      # ✅ Redirect to order show page (user clicks "Pay with Card" from there)
+      redirect_to order_path(@order), notice: "Order placed successfully. Please complete payment below."
     else
       @cart_items = fetch_cart_items
       render :new, status: :unprocessable_entity
     end
   end
-  
-
-
-
-  
 
   def show
     @order = Order.find_by(id: params[:id])
-
-    if @order.nil?
-      # redirect_to orders_path, alert: "Order not found."
-      redirect_to orders_path
-    end
+    redirect_to orders_path if @order.nil?
   end
 
   def success
     @order = Order.find_by(id: params[:order_id])
-
-    if @order.nil?
-      # redirect_to root_path, alert: "Order not found."
-      redirect_to root_path
-    end
+    redirect_to root_path if @order.nil?
   end
 
   private

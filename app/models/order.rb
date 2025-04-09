@@ -41,4 +41,7 @@ class Order < ApplicationRecord
     self.gst = total_price * tax_rates[:gst]
     self.total_with_taxes = total_price + pst + gst
   end
+  def mark_as_paid(payment_id)
+    update(paid: true, stripe_payment_id: payment_id, status: 'paid')
+  end
 end

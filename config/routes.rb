@@ -1,7 +1,6 @@
 Rails.application.routes.draw do
   get "pages/show"
   get "orders/new"
-  get "orders/create"
   get "orders/index"
   get "orders/show"
   get "cart/show"
@@ -42,6 +41,12 @@ Rails.application.routes.draw do
 
 
   get "/pages/:slug", to: "pages#show", as: "page"
+
+
+  post 'checkout/create', to: 'checkout#create', as: 'create_checkout'
+  get 'checkout/success', to: 'checkout#success', as: 'checkout_success'
+  get 'checkout/cancel', to: 'checkout#cancel', as: 'checkout_cancel' 
+
 
   # Health & PWA endpoints (optional but good)
   get "up" => "rails/health#show", as: :rails_health_check
