@@ -4,6 +4,7 @@ class User < ApplicationRecord
 
   has_many :orders, dependent: :destroy
   has_many :reviews, dependent: :destroy
+  belongs_to :province, optional: true
 
   validates :username, presence: true, uniqueness: true
   validates :address, presence: true, if: -> { admin? }

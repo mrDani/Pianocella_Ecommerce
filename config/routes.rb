@@ -34,7 +34,11 @@ Rails.application.routes.draw do
   # end
   
   
-  get 'profile', to: 'users#profile', as: 'user_profile'
+
+  get '/profile', to: 'users#profile', as: :profile
+
+  # Custom update route for profile
+  patch "/profile/update_shipping", to: "users#update_shipping", as: :update_shipping
 
 
   get "/pages/:slug", to: "pages#show", as: "page"

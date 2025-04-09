@@ -79,3 +79,4 @@ gem 'open-uri'
 gem 'httparty'
 gem 'ferrum'
 
+gem 'stripe'

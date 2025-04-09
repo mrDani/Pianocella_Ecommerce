@@ -51,3 +51,20 @@ Page.find_or_create_by(slug: "about") do |page|
     page.content = "This is the Contact page."
   end
   
+
+
+  Province.create!([
+    { name: "Alberta", pst: 0.0, gst: 0.05 },
+    { name: "British Columbia", pst: 0.07, gst: 0.05 },
+    { name: "Manitoba", pst: 0.07, gst: 0.05 },
+    { name: "New Brunswick", pst: 0.10, gst: 0.05 },
+    { name: "Newfoundland and Labrador", pst: 0.10, gst: 0.05 },
+    { name: "Nova Scotia", pst: 0.10, gst: 0.05 },
+    { name: "Ontario", pst: 0.08, gst: 0.05 },
+    { name: "Prince Edward Island", pst: 0.10, gst: 0.05 },
+    { name: "Quebec", pst: 0.09975, gst: 0.05 },
+    { name: "Saskatchewan", pst: 0.06, gst: 0.05 },
+    { name: "Northwest Territories", pst: 0.0, gst: 0.05 },
+    { name: "Nunavut", pst: 0.0, gst: 0.05 },
+    { name: "Yukon", pst: 0.0, gst: 0.05 }
+  ])

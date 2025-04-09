@@ -15,11 +15,24 @@ class OrdersController < ApplicationController
       redirect_to cart_path, alert: "Your cart is empty. Add products to proceed."
       return
     end
-
+  
     @cart_items = fetch_cart_items
     @total_price = @cart_items.sum { |item| item[:subtotal] }
-    @order = Order.new
+  
+    if user_signed_in?
+      @order = Order.new(
+        name: current_user.username,
+        email: current_user.email,
+        shipping_address: current_user.address,
+        city: current_user.city,
+        province: current_user.province&.name || current_user.province,
+        postal_code: current_user.postal_code
+      )
+    else
+      @order = Order.new
+    end
   end
+  
 
   def create
     if @cart.empty?
@@ -59,7 +72,16 @@ class OrdersController < ApplicationController
     @order.total_price = total_with_taxes # <-- Save final total here
     @order.total_with_taxes = total_with_taxes
     @order.user = current_user if user_signed_in?
-  
+    
+    if user_signed_in?
+      current_user.update(
+        address: @order.shipping_address,
+        city: @order.city,
+        postal_code: @order.postal_code,
+        province: Province.find_by(name: @order.province)
+      )
+    end
+    
     if @order.save
       save_cart_items_to_order(@order)
       session[:cart] = {}
