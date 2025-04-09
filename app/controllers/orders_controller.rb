@@ -26,35 +26,57 @@ class OrdersController < ApplicationController
       redirect_to cart_path, alert: "Your cart is empty"
       return
     end
-
+  
     order_params = params.require(:order).permit(:name, :email, :shipping_address, :city, :province, :postal_code)
-
+  
+    base_total = fetch_cart_items.sum { |item| item[:subtotal] }
+  
+    pst_rate = case order_params[:province]
+               when "Manitoba" then 0.07
+               when "Alberta" then 0.00
+               when "British Columbia" then 0.07
+               when "Ontario" then 0.08
+               when "Quebec" then 0.09975
+               when "Saskatchewan" then 0.06
+               when "New Brunswick" then 0.10
+               when "Newfoundland and Labrador" then 0.10
+               when "Nova Scotia" then 0.10
+               when "Prince Edward Island" then 0.10
+               when "Northwest Territories" then 0.00
+               when "Nunavut" then 0.00
+               when "Yukon" then 0.00
+               else 0.00
+               end
+  
+    gst_rate = 0.05
+  
+    pst = base_total * pst_rate
+    gst = base_total * gst_rate
+    total_with_taxes = base_total + pst + gst
+  
     @order = Order.new(order_params)
     @order.status = "pending"
-    @order.total_price = fetch_cart_items.sum { |item| item[:subtotal] }
-    @order.user = current_user if user_signed_in?  # Associate order with user if logged in
-
+    @order.total_price = base_total
+    @order.pst = pst
+    @order.gst = gst
+    @order.total_with_taxes = total_with_taxes
+    @order.user = current_user if user_signed_in?
+  
     if @order.save
       save_cart_items_to_order(@order)
-      session[:cart] = {} # Clear the cart
-
+      session[:cart] = {}
+  
       if user_signed_in?
         redirect_to orders_path, notice: "Order placed successfully!"
       else
-        redirect_to order_success_path(order_id: @order.id), notice: "Order placed successfully!" # Guest users redirected to success page
+        redirect_to order_success_path(order_id: @order.id), notice: "Order placed successfully!"
       end
     else
       @cart_items = fetch_cart_items
       render :new, status: :unprocessable_entity
     end
   end
-
-
-
-
-
-
-
+  
 
 
 
