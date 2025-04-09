@@ -34,7 +34,8 @@ Rails.application.routes.draw do
   # end
   
   
-  
+  get 'profile', to: 'users#profile', as: 'user_profile'
+
 
   get "/pages/:slug", to: "pages#show", as: "page"
 
