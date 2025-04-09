@@ -29,8 +29,10 @@ class OrdersController < ApplicationController
   
     order_params = params.require(:order).permit(:name, :email, :shipping_address, :city, :province, :postal_code)
   
+    # Calculate base subtotal
     base_total = fetch_cart_items.sum { |item| item[:subtotal] }
   
+    # Determine tax rates based on province
     pst_rate = case order_params[:province]
                when "Manitoba" then 0.07
                when "Alberta" then 0.00
@@ -38,27 +40,23 @@ class OrdersController < ApplicationController
                when "Ontario" then 0.08
                when "Quebec" then 0.09975
                when "Saskatchewan" then 0.06
-               when "New Brunswick" then 0.10
-               when "Newfoundland and Labrador" then 0.10
-               when "Nova Scotia" then 0.10
-               when "Prince Edward Island" then 0.10
-               when "Northwest Territories" then 0.00
-               when "Nunavut" then 0.00
-               when "Yukon" then 0.00
+               when "New Brunswick", "Newfoundland and Labrador", "Nova Scotia", "Prince Edward Island" then 0.10
                else 0.00
                end
   
     gst_rate = 0.05
   
+    # Tax calculations
     pst = base_total * pst_rate
     gst = base_total * gst_rate
     total_with_taxes = base_total + pst + gst
   
+    # Build order with tax data
     @order = Order.new(order_params)
     @order.status = "pending"
-    @order.total_price = base_total
     @order.pst = pst
     @order.gst = gst
+    @order.total_price = total_with_taxes # <-- Save final total here
     @order.total_with_taxes = total_with_taxes
     @order.user = current_user if user_signed_in?
   
@@ -77,9 +75,6 @@ class OrdersController < ApplicationController
     end
   end
   
-
-
-
 
 
 
