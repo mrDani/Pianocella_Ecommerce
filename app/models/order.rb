@@ -30,4 +30,15 @@ class Order < ApplicationRecord
   def self.ransackable_associations(auth_object = nil)
     %w[order_items user]
   end
+
+  before_save :calculate_taxes_and_total
+
+  def calculate_taxes_and_total
+    return unless province.present? && total_price.present?
+
+    tax_rates = TAX_RATES[province] || { pst: 0.0, gst: 0.0 }
+    self.pst = total_price * tax_rates[:pst]
+    self.gst = total_price * tax_rates[:gst]
+    self.total_with_taxes = total_price + pst + gst
+  end
 end
