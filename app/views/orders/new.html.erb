@@ -46,13 +46,28 @@
   <div class="mb-3">
     <%= f.label :city, "City" %>
     <%= f.text_field :city, class: "form-control", required: true %>
-  </div>
-
-
+  </div>  
 
   <div class="mb-3">
   <%= f.label :province, "Province" %>
-  <%= f.select :province, ["Manitoba", "Alberta", "British Columbia", "Ontario", "Quebec"], { prompt: "Select Province" }, { class: "form-control", required: true, id: "province-select" } %>
+  <%= f.select :province,
+    [
+      "Alberta",
+      "British Columbia",
+      "Manitoba",
+      "New Brunswick",
+      "Newfoundland and Labrador",
+      "Nova Scotia",
+      "Ontario",
+      "Prince Edward Island",
+      "Quebec",
+      "Saskatchewan",
+      "Northwest Territories",
+      "Nunavut",
+      "Yukon"
+    ],
+    { prompt: "Select Province" },
+    { class: "form-control", required: true, id: "province-select" } %>
   </div>
 
 

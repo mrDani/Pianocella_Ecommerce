@@ -29,20 +29,44 @@ document.addEventListener("DOMContentLoaded", function () {
             let gstRate = 0.05;
 
             switch (province) {
-                case 'Manitoba':
-                    pstRate = 0.07;
-                    break;
                 case 'Alberta':
                     pstRate = 0.00;
                     break;
                 case 'British Columbia':
                     pstRate = 0.07;
                     break;
+                case 'Manitoba':
+                    pstRate = 0.07;
+                    break;
+                case 'New Brunswick':
+                    pstRate = 0.10; // HST (harmonized)
+                    gstRate = 0.00;
+                    break;
+                case 'Newfoundland and Labrador':
+                    pstRate = 0.10; // HST
+                    gstRate = 0.00;
+                    break;
+                case 'Nova Scotia':
+                    pstRate = 0.10; // HST
+                    gstRate = 0.00;
+                    break;
                 case 'Ontario':
                     pstRate = 0.08;
                     break;
+                case 'Prince Edward Island':
+                    pstRate = 0.10; // HST
+                    gstRate = 0.00;
+                    break;
                 case 'Quebec':
                     pstRate = 0.09975;
+                    break;
+                case 'Saskatchewan':
+                    pstRate = 0.06;
+                    break;
+                case 'Northwest Territories':
+                case 'Nunavut':
+                case 'Yukon':
+                    pstRate = 0.00;
                     break;
                 default:
                     pstRate = 0;
