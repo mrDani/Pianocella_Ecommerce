@@ -33,7 +33,7 @@
 
 
 <% if @order.paid? %>
-  <p><strong>Status:</strong> Paid ✅</p>
+  <p><strong>Status:</strong> Paid!</p>
 <% else %>
   <%= button_to "Pay with Card", create_checkout_path(order_id: @order.id), method: :post, class: "btn btn-primary" %>
 <% end %>
