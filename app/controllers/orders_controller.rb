@@ -43,19 +43,29 @@ class OrdersController < ApplicationController
     gst_rate = 0.05
     hst_rate = 0.0
 
-    # Apply tax rates based on province
+    # Determine HST or PST/GST based on province
     case order_params[:province]
-    when "Manitoba" then pst_rate = 0.07
-    when "British Columbia" then pst_rate = 0.07
-    when "Ontario" then pst_rate = 0.08
-    when "Quebec" then pst_rate = 0.09975
-    when "Saskatchewan" then pst_rate = 0.06
-    when "New Brunswick", "Newfoundland and Labrador", "Nova Scotia", "Prince Edward Island"
-      hst_rate = 0.10
-      gst_rate = 0.0
-    when "Northwest Territories", "Nunavut", "Yukon"
-      hst_rate = 0.05
-      gst_rate = 0.0
+    when "Ontario"
+      hst_rate = 0.13
+      gst_rate = pst_rate = 0.0
+    when "New Brunswick", "Newfoundland and Labrador", "Prince Edward Island"
+      hst_rate = 0.15
+      gst_rate = pst_rate = 0.0
+    when "Nova Scotia"
+      # As of April 2025
+      hst_rate = 0.14
+      gst_rate = pst_rate = 0.0
+    when "Manitoba"
+      pst_rate = 0.07
+    when "British Columbia"
+      pst_rate = 0.07
+    when "Saskatchewan"
+      pst_rate = 0.06
+    when "Quebec"
+      pst_rate = 0.09975
+    when "Alberta", "Northwest Territories", "Nunavut", "Yukon"
+      # Only GST applies
+      pst_rate = 0.0
     end
 
     # Tax calculations
