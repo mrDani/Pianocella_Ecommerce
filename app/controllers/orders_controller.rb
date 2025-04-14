@@ -16,17 +16,17 @@ class OrdersController < ApplicationController
     @total_price = @cart_items.sum { |item| item[:subtotal] }
 
     @order = if user_signed_in?
-               Order.new(
-                 name: current_user.username,
-                 email: current_user.email,
-                 shipping_address: current_user.address,
-                 city: current_user.city,
-                 province: current_user.province&.name || current_user.province,
-                 postal_code: current_user.postal_code
-               )
-             else
-               Order.new
-             end
+      Order.new(
+        name: current_user.username,
+        email: current_user.email,
+        shipping_address: current_user.address,
+        city: current_user.city,
+        province: current_user.province&.name || current_user.province,
+        postal_code: current_user.postal_code
+      )
+    else
+      Order.new
+    end
   end
 
   def create
@@ -38,26 +38,37 @@ class OrdersController < ApplicationController
     order_params = params.require(:order).permit(:name, :email, :shipping_address, :city, :province, :postal_code)
     base_total = fetch_cart_items.sum { |item| item[:subtotal] }
 
-    pst_rate = case order_params[:province]
-               when "Manitoba" then 0.07
-               when "Alberta" then 0.00
-               when "British Columbia" then 0.07
-               when "Ontario" then 0.08
-               when "Quebec" then 0.09975
-               when "Saskatchewan" then 0.06
-               when "New Brunswick", "Newfoundland and Labrador", "Nova Scotia", "Prince Edward Island" then 0.10
-               else 0.00
-               end
-
+    # Default tax rates
+    pst_rate = 0.0
     gst_rate = 0.05
+    hst_rate = 0.0
+
+    # Apply tax rates based on province
+    case order_params[:province]
+    when "Manitoba" then pst_rate = 0.07
+    when "British Columbia" then pst_rate = 0.07
+    when "Ontario" then pst_rate = 0.08
+    when "Quebec" then pst_rate = 0.09975
+    when "Saskatchewan" then pst_rate = 0.06
+    when "New Brunswick", "Newfoundland and Labrador", "Nova Scotia", "Prince Edward Island"
+      hst_rate = 0.10
+      gst_rate = 0.0
+    when "Northwest Territories", "Nunavut", "Yukon"
+      hst_rate = 0.05
+      gst_rate = 0.0
+    end
+
+    # Tax calculations
     pst = base_total * pst_rate
     gst = base_total * gst_rate
-    total_with_taxes = base_total + pst + gst
+    hst = base_total * hst_rate
+    total_with_taxes = base_total + pst + gst + hst
 
     @order = Order.new(order_params)
     @order.status = "pending"
     @order.pst = pst
     @order.gst = gst
+    @order.hst = hst
     @order.total_price = total_with_taxes
     @order.total_with_taxes = total_with_taxes
     @order.user = current_user if user_signed_in?
@@ -75,7 +86,6 @@ class OrdersController < ApplicationController
       save_cart_items_to_order(@order)
       session[:cart] = {}
 
-      # ✅ Redirect to order show page (user clicks "Pay with Card" from there)
       redirect_to order_path(@order), notice: "Order placed successfully. Please complete payment below."
     else
       @cart_items = fetch_cart_items
