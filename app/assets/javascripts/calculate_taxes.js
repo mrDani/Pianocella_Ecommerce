@@ -1,64 +1,47 @@
-// app/assets/javascripts/tax_calculator.js
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("✅ JavaScript Loaded Successfully");
+    console.log("✅ JavaScript Loaded");
+  
+    const provinceSelect = document.getElementById('province-select');
+    const totalPriceElement = document.getElementById('total-price');
+    const pstElement = document.getElementById('pst');
+    const gstElement = document.getElementById('gst');
+    const hstElement = document.getElementById('hst');
+    const totalWithTaxesElement = document.getElementById('total-with-taxes');
+  
+    if (!provinceSelect || !totalPriceElement || !pstElement || !gstElement || !hstElement || !totalWithTaxesElement) {
+      console.error("❌ Missing elements in DOM");
+      return;
+    }
+  
+    const baseTotal = parseFloat(totalPriceElement.innerText) || 0.0;
   
     function calculateTaxes() {
-      const provinceSelect = document.getElementById('province-select');
-      const totalPriceElement = document.getElementById('total-price');
-      const pstElement = document.getElementById('pst');
-      const gstElement = document.getElementById('gst');
-      const hstElement = document.getElementById('hst');
-      const totalWithTaxesElement = document.getElementById('total-with-taxes');
+      const selectedProvince = provinceSelect.value;
+      const taxRates = window.PROVINCE_TAXES[selectedProvince];
   
-      if (!provinceSelect || !totalPriceElement || !pstElement || !gstElement || !hstElement || !totalWithTaxesElement) {
-        console.error("❌ Missing required tax elements");
+      if (!taxRates) {
+        console.warn(`⚠️ No tax data for province: ${selectedProvince}`);
+        pstElement.innerText = "0.00";
+        gstElement.innerText = "0.00";
+        hstElement.innerText = "0.00";
+        totalWithTaxesElement.innerText = baseTotal.toFixed(2);
         return;
       }
   
-      const province = provinceSelect.value;
-      const baseTotal = parseFloat(totalPriceElement.innerText) || 0.0;
-  
-      let pst = 0, gst = 0, hst = 0;
-  
-      switch (province) {
-        case 'Ontario': hst = baseTotal * 0.13; break;
-        case 'Nova Scotia': hst = baseTotal * 0.14; break;
-        case 'New Brunswick':
-        case 'Newfoundland and Labrador':
-        case 'Prince Edward Island':
-          hst = baseTotal * 0.15; break;
-        case 'Northwest Territories':
-        case 'Nunavut':
-        case 'Yukon':
-          hst = baseTotal * 0.05; break;
-        case 'British Columbia':
-          pst = baseTotal * 0.07; gst = baseTotal * 0.05; break;
-        case 'Manitoba':
-          pst = baseTotal * 0.07; gst = baseTotal * 0.05; break;
-        case 'Saskatchewan':
-          pst = baseTotal * 0.06; gst = baseTotal * 0.05; break;
-        case 'Quebec':
-          pst = baseTotal * 0.09975; gst = baseTotal * 0.05; break;
-        case 'Alberta':
-          gst = baseTotal * 0.05; break;
-        default:
-          gst = baseTotal * 0.05;
-      }
-  
+      const pst = baseTotal * taxRates.pst;
+      const gst = baseTotal * taxRates.gst;
+      const hst = baseTotal * taxRates.hst;
       const totalWithTaxes = baseTotal + pst + gst + hst;
+  
       pstElement.innerText = pst.toFixed(2);
       gstElement.innerText = gst.toFixed(2);
       hstElement.innerText = hst.toFixed(2);
       totalWithTaxesElement.innerText = totalWithTaxes.toFixed(2);
   
-      console.log("✅ Tax calculation updated", { province, pst, gst, hst, totalWithTaxes });
+      console.log("✅ Tax calculation updated", { selectedProvince, ...taxRates, totalWithTaxes });
     }
   
-    // Hook into dropdown change + page load
-    const provinceSelect = document.getElementById('province-select');
-    if (provinceSelect) {
-      provinceSelect.addEventListener('change', calculateTaxes);
-      if (provinceSelect.value) calculateTaxes();
-    }
+    provinceSelect.addEventListener('change', calculateTaxes);
+    if (provinceSelect.value) calculateTaxes(); // Trigger on load
   });
   

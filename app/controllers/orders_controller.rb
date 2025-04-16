@@ -27,6 +27,13 @@ class OrdersController < ApplicationController
     else
       Order.new
     end
+    @provinces_json = Province.all.index_by(&:name).transform_values do |p|
+      {
+        pst: p.pst.to_f,
+        gst: p.gst.to_f,
+        hst: p.hst.to_f
+      }
+    end.to_json
   end
 
   def create
@@ -34,46 +41,25 @@ class OrdersController < ApplicationController
       redirect_to cart_path, alert: "Your cart is empty"
       return
     end
-
+  
     order_params = params.require(:order).permit(:name, :email, :shipping_address, :city, :province, :postal_code)
     base_total = fetch_cart_items.sum { |item| item[:subtotal] }
-
-    # Default tax rates
-    pst_rate = 0.0
-    gst_rate = 0.05
-    hst_rate = 0.0
-
-    # Determine HST or PST/GST based on province
-    case order_params[:province]
-    when "Ontario"
-      hst_rate = 0.13
-      gst_rate = pst_rate = 0.0
-    when "New Brunswick", "Newfoundland and Labrador", "Prince Edward Island"
-      hst_rate = 0.15
-      gst_rate = pst_rate = 0.0
-    when "Nova Scotia"
-      # As of April 2025
-      hst_rate = 0.14
-      gst_rate = pst_rate = 0.0
-    when "Manitoba"
-      pst_rate = 0.07
-    when "British Columbia"
-      pst_rate = 0.07
-    when "Saskatchewan"
-      pst_rate = 0.06
-    when "Quebec"
-      pst_rate = 0.09975
-    when "Alberta", "Northwest Territories", "Nunavut", "Yukon"
-      # Only GST applies
-      pst_rate = 0.0
-    end
-
-    # Tax calculations
+  
+    # 🔍 Look up the Province from the database
+    province_record = Province.find_by(name: order_params[:province])
+  
+    # ✅ Fallback to 0.0 if not found
+    pst_rate = province_record&.pst.to_f
+    gst_rate = province_record&.gst.to_f
+    hst_rate = province_record&.hst.to_f
+  
+    # 🧮 Tax calculations
     pst = base_total * pst_rate
     gst = base_total * gst_rate
     hst = base_total * hst_rate
     total_with_taxes = base_total + pst + gst + hst
-
+  
+    # 📝 Build the Order
     @order = Order.new(order_params)
     @order.status = "pending"
     @order.pst = pst
@@ -82,26 +68,27 @@ class OrdersController < ApplicationController
     @order.total_price = total_with_taxes
     @order.total_with_taxes = total_with_taxes
     @order.user = current_user if user_signed_in?
-
+  
+    # 👤 Update user profile info if logged in
     if user_signed_in?
       current_user.update(
         address: @order.shipping_address,
         city: @order.city,
         postal_code: @order.postal_code,
-        province: Province.find_by(name: @order.province)
+        province: province_record
       )
     end
-
+  
     if @order.save
       save_cart_items_to_order(@order)
       session[:cart] = {}
-
       redirect_to order_path(@order), notice: "Order placed successfully. Please complete payment below."
     else
       @cart_items = fetch_cart_items
       render :new, status: :unprocessable_entity
     end
   end
+  
 
   def show
     @order = Order.find_by(id: params[:id])

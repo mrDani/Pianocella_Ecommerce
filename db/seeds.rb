@@ -52,19 +52,30 @@ Page.find_or_create_by(slug: "about") do |page|
   end
   
 
+  puts " Resetting province data..."
 
+  # Step 1: Nullify province_id in users to avoid foreign key error
+  User.update_all(province_id: nil)
+  
+  # Step 2: Safely destroy and reseed provinces
+  Province.destroy_all
+  
+  # Step 3: Reseed with correct PST/GST/HST
   Province.create!([
-    { name: "Alberta", pst: 0.0, gst: 0.05 },
-    { name: "British Columbia", pst: 0.07, gst: 0.05 },
-    { name: "Manitoba", pst: 0.07, gst: 0.05 },
-    { name: "New Brunswick", pst: 0.10, gst: 0.05 },
-    { name: "Newfoundland and Labrador", pst: 0.10, gst: 0.05 },
-    { name: "Nova Scotia", pst: 0.10, gst: 0.05 },
-    { name: "Ontario", pst: 0.08, gst: 0.05 },
-    { name: "Prince Edward Island", pst: 0.10, gst: 0.05 },
-    { name: "Quebec", pst: 0.09975, gst: 0.05 },
-    { name: "Saskatchewan", pst: 0.06, gst: 0.05 },
-    { name: "Northwest Territories", pst: 0.0, gst: 0.05 },
-    { name: "Nunavut", pst: 0.0, gst: 0.05 },
-    { name: "Yukon", pst: 0.0, gst: 0.05 }
+    { name: "Alberta", gst: 0.05, pst: 0.00, hst: 0.00 },
+    { name: "British Columbia", gst: 0.05, pst: 0.07, hst: 0.00 },
+    { name: "Manitoba", gst: 0.05, pst: 0.07, hst: 0.00 },
+    { name: "New Brunswick", gst: 0.00, pst: 0.00, hst: 0.15 },
+    { name: "Newfoundland and Labrador", gst: 0.00, pst: 0.00, hst: 0.15 },
+    { name: "Nova Scotia", gst: 0.00, pst: 0.00, hst: 0.14 },
+    { name: "Ontario", gst: 0.00, pst: 0.00, hst: 0.13 },
+    { name: "Prince Edward Island", gst: 0.00, pst: 0.00, hst: 0.15 },
+    { name: "Quebec", gst: 0.05, pst: 0.09975, hst: 0.00 },
+    { name: "Saskatchewan", gst: 0.05, pst: 0.06, hst: 0.00 },
+    { name: "Northwest Territories", gst: 0.05, pst: 0.00, hst: 0.00 },
+    { name: "Nunavut", gst: 0.05, pst: 0.00, hst: 0.00 },
+    { name: "Yukon", gst: 0.05, pst: 0.00, hst: 0.00 }
   ])
+  
+  puts "✅ Provinces seeded successfully!"
+  

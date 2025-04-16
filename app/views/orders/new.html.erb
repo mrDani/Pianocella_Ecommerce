@@ -48,25 +48,14 @@
   </div>  
 
   <div class="mb-3">
-    <%= f.label :province, "Province" %>
-    <%= f.select :province,
-      [
-        "Alberta",
-        "British Columbia",
-        "Manitoba",
-        "New Brunswick",
-        "Newfoundland and Labrador",
-        "Nova Scotia",
-        "Ontario",
-        "Prince Edward Island",
-        "Quebec",
-        "Saskatchewan",
-        "Northwest Territories",
-        "Nunavut",
-        "Yukon"
-      ],
-      { prompt: "Select Province" },
-      { class: "form-control", required: true, id: "province-select" } %>
+  <%= f.label :province, "Province" %>
+  <%= f.select :province, 
+    Province.pluck(:name), 
+    { prompt: "Select Province" }, 
+    { class: "form-control", required: true, id: "province-select" } %>
+</div>
+
+
   </div>
 
   <div class="mb-3">
@@ -86,3 +75,8 @@
     <%= f.submit "Place Order", class: "btn btn-success" %>
   </div>
 <% end %>
+
+
+<script>
+  window.PROVINCE_TAXES = <%= raw @provinces_json %>;
+</script>
