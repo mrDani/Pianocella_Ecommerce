@@ -4,28 +4,40 @@ ActiveAdmin.register Order do
   index do
     selectable_column
     id_column
+
     column :user do |order|
       order.user ? order.user.username : "Guest"
     end
+
     column :name
     column :email
     column :shipping_address
     column :city
     column :province
     column :postal_code
+
     column :pst do |order|
       number_to_currency(order.pst || 0)
     end
+
     column :gst do |order|
       number_to_currency(order.gst || 0)
     end
+
     column :hst do |order|
       number_to_currency(order.hst || 0)
     end
+
     column :total_price do |order|
       number_to_currency(order.total_price || 0)
     end
+
     column :status
+
+    column "Items Ordered" do |order|
+      order.order_items.map { |item| "#{item.product.name} × #{item.quantity}" }.join(", ").html_safe
+    end
+
     column :created_at
     actions
   end
