@@ -1,3 +1,9 @@
+<%= breadcrumb([
+  ["All Products", root_path],
+  [@product.category.name, category_path(@product.category)],
+  [@product.name, nil]
+]) %>
+
 <h1><%= @product.name %></h1>
 
 <% if @product.image.attached? %>

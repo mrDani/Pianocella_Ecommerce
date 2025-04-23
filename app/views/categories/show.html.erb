@@ -1,3 +1,8 @@
+<%= breadcrumb([
+  ["All Products", root_path],
+  [@category.name, nil]
+]) %>
+
 <h1 class="mb-4"><%= @category.name %></h1>
 <p class="text-muted"><%= @category.description %></p>
 

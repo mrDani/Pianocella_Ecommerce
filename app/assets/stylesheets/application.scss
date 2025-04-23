@@ -14,3 +14,18 @@ body {
     color: #fff;
   }
   
+  .breadcrumb-container {
+    font-size: 14px;
+    margin-bottom: 1rem;
+  }
+  .breadcrumb-link {
+    color: #007bff;
+    text-decoration: none;
+  }
+  .breadcrumb-link:hover {
+    text-decoration: underline;
+  }
+  .breadcrumb-current {
+    font-weight: bold;
+  }
+  

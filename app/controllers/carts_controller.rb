@@ -22,6 +22,9 @@ class CartsController < ApplicationController
     id = params[:product_id].to_s
     @cart[id] = (@cart[id] || 0) + params[:quantity].to_i
     save_cart
+
+    session[:return_to_product] = params[:return_to] if params[:return_to].present?
+    
     redirect_to cart_path, notice: "Product added to cart." # Redirecting to cart_path instead of checkout
   end
   def update_quantity
